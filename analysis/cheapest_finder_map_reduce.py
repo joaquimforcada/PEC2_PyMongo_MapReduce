@@ -1,6 +1,7 @@
 from mongo_lib import db_management as db_mgm
 from pprint import pprint
 from bson.code import Code
+from bson.json_util import dumps
 
 
 col_flights = db_mgm.create_database_collection(db_mgm.connect_to_mongodb(), 'flight_catalog', 'flights')
@@ -21,25 +22,26 @@ mapper = Code("""
                             "priceAdult": this.prices.adt
                            } );
             }
-              """)
+            """)
 
 reducer = Code("""
-function (key, flights) {
-        var minPrice = 100000000;
-        var selectFlight = {};
-        
-        flights.forEach( function(flight){
-                if ( minPrice > flight.priceAdult ) {
-                    minPrice = flight.priceAdult;
-                    selectFlight = flight;
-                }
+            function (key, flights) {
+                    var minPrice = false;
+                    var selectFlight = {};
+                    
+                    flights.forEach( function(flight){
+                            if ( !minPrice || minPrice > flight.priceAdult ) {
+                                minPrice = flight.priceAdult;
+                                selectFlight = flight;
+                            }
+                        }
+                    );
+                    
+                    return selectFlight;
             }
-        );
-        
-        return selectFlight;
-    }
-""")
+            """)
 
 result = col_flights.map_reduce(mapper, reducer, "cheapest_flight_monthly")
 for doc in result.find():
-    pprint(doc)
+    pprint(dumps(doc))
+    print ','

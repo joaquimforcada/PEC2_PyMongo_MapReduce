@@ -37,23 +37,22 @@ def create_flights(col_flights):
     for month in range(1, 12):
         for day_of_month in range(1, 29):
 
-            how_many_flights_in_day = random.randint(2, 20)
+            how_many_flights_in_day = random.randint(2, 40)
             for repetitions in range(1, how_many_flights_in_day):
                 how_many += 1
 
                 str_end_day = str(day_of_month).zfill(2)
                 date = "2018-" + str(month).zfill(2) + "-" + str_end_day
 
-                cities_of_spain = ['BCN', 'GIR', 'MAD', 'VAL', 'OVD', 'ALI', 'GRA', 'STG', 'SEV', 'SAN']
+                cities_of_spain = ['BCN', 'GIR', 'MAD', 'VAL', 'OVD', 'ALI', 'GRA', 'STG', 'SEV', 'SAN', 'CAD']
                 city_orig = random.choice(cities_of_spain)
                 cities_of_spain.remove(city_orig)
                 city_dest = random.choice(cities_of_spain)
 
-                companies = ['KLM', 'VY', 'AF', 'LTH', 'IBE', 'QTR']
+                companies = ['KLM', 'VY', 'VY', 'VY', 'AF', 'LTH', 'IBE', 'QTR', 'RYA']
                 company = random.choice(companies)
 
-
-                amount = random.randint(50, 350)
+                amount = random.randint(50, 250)
                 # Summer is most expensive season:
                 if (month == 7 or month == 8):
                     amount = amount*1.5
@@ -61,12 +60,18 @@ def create_flights(col_flights):
                     amount = amount * 0.7
                 # Vueling is cheaper than the rest:
                 if (company == 'VY'):
-                    amount = amount * 0.5
+                    amount = amount * 0.8
+                # Ryan Air is the cheapest:
+                elif (company == 'RYA'):
+                    amount = amount * 0.2
                 else:
-                    amount = amount * 1.2
+                    amount = amount * 1.8
 
-                post_flight_id = col_flights.insert_one(get_imaginary_flight(date, city_orig, city_dest, company, amount)).inserted_id
-                pprint(post_flight_id)
+                flight = get_imaginary_flight(date, city_orig, city_dest, company, amount)
+                if (random.randint(0,9)>8):
+                    print flight
+                    print ','
+                col_flights.insert_one(flight).inserted_id
 
     return how_many
 

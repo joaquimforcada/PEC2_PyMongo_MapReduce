@@ -19,7 +19,9 @@ mapper = Code("""
                             "comp": this.comp,
                             "depD": this.depD,
                             "arrD": this.arrD,
-                            "priceAdult": this.prices.adt
+                            "priceAdult": this.prices.adt,
+                            "priceChildren": this.prices.chd,
+                            "priceInfant": this.prices.inf
                            } );
             }
             """)
